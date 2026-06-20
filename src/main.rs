@@ -260,6 +260,6 @@ async fn cmd_migrate(cfg: &config::Config) -> Result<()> {
 
     let pg = SqliteStorage::connect(&cfg.db_url).await?;
     pg.run_migrations().await?;
-    println!("✓ Migrations completed successfully.");
+    println!("Migrations completed successfully.");
     Ok(())
 }

@@ -30,8 +30,12 @@ impl SqliteStorage {
             .await
             .context("Failed to connect to SQLite database")?;
 
-        info!("Connected to SQLite");
-        Ok(SqliteStorage { pool })
+        let storage = SqliteStorage { pool };
+        
+        // Execute automatic migrations
+        storage.run_migrations().await.context("Failed to auto-run SQLite migrations")?;
+
+        Ok(storage)
     }
 
     /// Run database migrations.
@@ -41,7 +45,6 @@ impl SqliteStorage {
             .execute(&self.pool)
             .await
             .context("Failed to run migrations")?;
-        info!("Migrations completed");
         Ok(())
     }
 
