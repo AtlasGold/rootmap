@@ -1,0 +1,48 @@
+[package]
+name = "rootmap"
+version = "0.1.0"
+edition = "2021"
+description = "CLI tool for mapping Linux infrastructure dependencies using PostgreSQL and Neo4j"
+authors = ["rootmap"]
+
+[[bin]]
+name = "rootmap"
+path = "src/main.rs"
+
+[dependencies]
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Error handling
+anyhow = "1"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Time and IDs
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+
+# Terminal output
+comfy-table = "7"
+
+# SQLite Storage
+sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "sqlite", "uuid", "chrono"] }
+
+# Neo4j
+neo4rs = "0.8"
+
+# System info
+sysinfo = "0.32"
+
+# Environment
+dotenvy = "0.15"

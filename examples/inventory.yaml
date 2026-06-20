@@ -1,0 +1,43 @@
+host: local
+dependencies:
+  - source_type: Service
+    source_id: nginx
+    target_type: Service
+    target_id: app
+    relation_type: DEPENDS_ON
+    confidence: 0.9
+
+  - source_type: Service
+    source_id: app
+    target_type: Service
+    target_id: postgresql
+    relation_type: DEPENDS_ON
+    confidence: 0.9
+
+  - source_type: Service
+    source_id: postgresql
+    target_type: Port
+    target_id: "tcp:5432"
+    relation_type: LISTENS_ON
+    confidence: 0.8
+
+  - source_type: Service
+    source_id: app
+    target_type: Port
+    target_id: "tcp:8080"
+    relation_type: LISTENS_ON
+    confidence: 0.7
+
+  - source_type: Service
+    source_id: nginx
+    target_type: Port
+    target_id: "tcp:80"
+    relation_type: LISTENS_ON
+    confidence: 0.9
+
+  - source_type: Service
+    source_id: nginx
+    target_type: Port
+    target_id: "tcp:443"
+    relation_type: LISTENS_ON
+    confidence: 0.9

@@ -1,0 +1,84 @@
+====================================================================
+           GUIA RÁPIDO DE OPERAÇÃO DO ROOTMAP
+====================================================================
+
+Este guia descreve os passos práticos para operar a ferramenta a partir da linha de comando, utilizando o comando global instalado no sistema.
+
+--------------------------------------------------------------------
+PASSO 0: INICIALIZAR O BANCO DE GRAFOS (NEO4J)
+--------------------------------------------------------------------
+A infraestrutura de visualização do Neo4j é executada localmente via Docker. Para inicializar a instância, execute:
+
+docker compose up -d
+
+--------------------------------------------------------------------
+PASSO 1: APLICAR MIGRAÇÕES NO BANCO LOCAL (SQLITE)
+--------------------------------------------------------------------
+Comando:
+rootmap-cli migrate
+
+Descrição:
+Cria e inicializa o arquivo de banco relacional local "rootmap.db" no diretório atual. Este banco armazenará os dados brutos de varredura do sistema operacional. Deve ser executado uma única vez na inicialização.
+
+--------------------------------------------------------------------
+PASSO 2: EXECUTAR VARREDURA DA MÁQUINA (SCAN)
+--------------------------------------------------------------------
+Comando:
+rootmap-cli scan
+
+Descrição:
+Inicia a coleta ativa de processos do sistema, serviços gerenciados pelo Systemd, contêineres em execução no Docker e portas de rede TCP/UDP ativas, salvando as informações coletadas na base relacional local.
+
+--------------------------------------------------------------------
+PASSO 3: IMPORTAR MAPA DE DEPENDÊNCIAS LÓGICAS (IMPORT)
+--------------------------------------------------------------------
+Comando:
+rootmap-cli import -f rootmap/examples/inventory.yaml
+
+Descrição:
+Como a detecção passiva de rede não mapeia dependências de negócio implicitamente (ex: saber que o servidor Nginx precisa do servidor de Aplicação, que por sua vez necessita do PostgreSQL), este comando importa relações adicionais definidas estruturalmente no arquivo YAML de inventário.
+
+--------------------------------------------------------------------
+PASSO 4: SINCRONIZAR ARMAZENAMENTO RELACIONAL COM GRAFO (SYNC)
+--------------------------------------------------------------------
+Comando:
+rootmap-cli sync
+
+Descrição:
+Transfere e correlaciona as entidades do banco SQLite local para o Neo4j, gerando os nós e os relacionamentos de dependência física e lógica no grafo.
+
+--------------------------------------------------------------------
+PASSO 5: ANALISAR IMPACTO DE COMPONENTES (IMPACT)
+--------------------------------------------------------------------
+Comando:
+rootmap-cli impact --node Service:postgresql
+
+Descrição:
+Mapeia o impacto downstream a partir de um componente específico. O comando exibe a árvore de conexões e os serviços que serão afetados em efeito cascata caso a entidade alvo falhe.
+
+--------------------------------------------------------------------
+PASSO 6: TRAÇAR CAMINHO DE DEPENDÊNCIA (PATH)
+--------------------------------------------------------------------
+Comando:
+rootmap-cli path --from Service:nginx --to Service:postgresql
+
+Descrição:
+Calcula e exibe o caminho de menor custo de dependência funcional entre duas entidades no grafo, facilitando o rastreamento em malhas complexas.
+
+--------------------------------------------------------------------
+PASSO 7: ANALISAR INCIDENTE ATIVO (INCIDENT ANALYZE)
+--------------------------------------------------------------------
+Comando:
+rootmap-cli incident analyze --symptom "site fora do ar" --affected Service:nginx
+
+Descrição:
+Rastreia a topologia do grafo no sentido contrário (upstream) a partir de um sintoma de falha, calculando scores de causa provável com base em proximidade, criticidade e status dos nós. Retorna um identificador único de incidente e os principais candidatos a causa raiz.
+
+--------------------------------------------------------------------
+PASSO 8: VISUALIZAR RELATÓRIO DO INCIDENTE (REPORT)
+--------------------------------------------------------------------
+Comando:
+rootmap-cli report --last
+
+Descrição:
+Gera e formata o relatório textual com base na última análise realizada, registrando os achados estruturais, a causa provável estimada e os caminhos de propagação de erro.
