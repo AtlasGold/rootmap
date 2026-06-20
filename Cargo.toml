@@ -2,7 +2,7 @@
 name = "rootmap"
 version = "0.1.0"
 edition = "2021"
-description = "CLI tool for mapping Linux infrastructure dependencies using PostgreSQL and Neo4j"
+description = "CLI tool for mapping Linux infrastructure dependencies using SQLite and Neo4j"
 authors = ["rootmap"]
 
 [[bin]]
